@@ -22,6 +22,9 @@ Better Block Editor (BBE) adds responsive layout controls, hover effects, on-scr
 * Pre-made Sites and Partial Import — bring over a full site or a single page/section; assets import automatically.
 * One-click customization for imported content — set primary, secondary, and neutral colors; BBE creates a balanced palette in one click.
 * Native Block Editor integration — no lock-in, lightweight, GPL, and free.
+
+https://www.youtube.com/watch?v=1Zp8oJk7UE8
+
 === Free pre-made site templates ===
 * Business — [https://templates.wpbbe.io/business/](https://templates.wpbbe.io/business/)
 * Brewery — [https://templates.wpbbe.io/brewery/](https://templates.wpbbe.io/brewery/)
