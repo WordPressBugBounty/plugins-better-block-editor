@@ -33,6 +33,10 @@
         "width": true
       }
     },
+    "align": [
+      "wide",
+      "full"
+    ],
     "color": {
       "text": true,
       "background": true,

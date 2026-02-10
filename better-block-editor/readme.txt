@@ -4,13 +4,13 @@ Tags:              responsive, block-editor, templates, animation, page-builder,
 Requires at least: 6.8
 Tested up to:      6.9
 Requires PHP:      7.4
-Stable tag:        1.2.0
+Stable tag:        1.2.1
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 Better Block Editor (BBE) — responsive layout controls, on-scroll animations, and pre-made site templates for Block Editor.
 == Description ==
 
-https://www.youtube.com/watch?v=YwZZb_XIkJs
+https://www.youtube.com/watch?v=ZOeSAoI6kdQ
 
 Better Block Editor (BBE) adds responsive layout controls, hover effects, on-scroll animations, and ready-to-use site templates to Block Editor. It’s not another page builder. It doesn’t replace core blocks or add bloat — BBE just adds the missing settings where needed. It works with your current block theme and plugins, so your existing content stays intact.
 === Highlights ===
@@ -68,6 +68,12 @@ Better Block Editor is distributed under the GPLv2 or later. You are free to use
 * Official website — [https://wpbbe.io/](https://wpbbe.io/)
 * User Guide — [https://docs.wpbbe.io/](https://docs.wpbbe.io/)
 == Changelog ==
+= 1.2.1 (10-02-2026) =
+1. Removed hidden reference elements (div.wpbbe-ref-anchor) from the editor.
+2. Added an option to stretch all form fields in Better Contact Form 7 block.
+3. Fixed an issue where Better Contact Form 7 block lost font size control data in specific use cases.
+4. Resolved a problem where buttons in Better Contact Form 7 block did not inherit font family from their parent container.
+5. Corrected placeholder text color rendering in Better Contact Form 7 block fields under certain conditions.
 = 1.2.0 (29-01-2026) =
 1. Added integration with Contact Form 7 via the "Better Contact Form 7" block.
 = 1.1.0 (20-01-2026) =

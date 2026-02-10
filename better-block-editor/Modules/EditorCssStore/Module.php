@@ -53,13 +53,6 @@ class Module extends ModuleBase {
 			)
 		);
 
-		wp_register_style(
-			$this->build_style_handle( 'index' ),
-			WPBBE_URL_DIST . $this::ASSETS_BUILD_PATH . 'index.css',
-			array(),
-			$asset_file['version']
-		);
-
 		add_action(
 			'enqueue_block_assets',
 			function () {
