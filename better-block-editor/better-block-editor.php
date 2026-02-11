@@ -4,7 +4,7 @@
  * Description:       Better Block Editor (BBE) adds responsive layout controls, hover effects, on-scroll animations, and ready-to-use site templates to Block Editor.
  * Requires at least: 6.8
  * Requires PHP:      7.4
- * Version:           1.2.2
+ * Version:           1.2.1
  * Author:            Dream-Theme
  * License:           GPLv2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/plugin.php';
 
-define( 'WPBBE_VERSION', '1.2.2' );
+define( 'WPBBE_VERSION', '1.2.1' );
 
 define( 'WPBBE_FILE', __FILE__ );
 define( 'WPBBE_DIR', plugin_dir_path( WPBBE_FILE ) );

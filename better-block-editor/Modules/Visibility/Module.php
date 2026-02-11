@@ -1,9 +1,7 @@
 <?php
 /**
  * Adds responsive visibility settings to all blocks.
- * Standard approach with ResponsiveBlockModuleBase can not be used here 
- * as visibility='hidden' must work even without any responsive settings
- * 
+ *
  * @package BetterBlockEditor
  */
 
@@ -27,7 +25,10 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 
 	const ATTRIBUTES = 'wpbbeVisibility';
 
-	public function process_assets(): void {
+	/**
+	 * add visibility plugin assets to editor (displays show/hide button in top toolbar)
+	 */
+	public function process_assets() {
 		parent::process_assets();
 
 		// in asset bundle mode plugin assets are already registered
@@ -64,7 +65,7 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 		);
 	}
 
-	public function setup_hooks(): void {
+	public function setup_hooks() {
 		add_filter( 'render_block', array( $this, 'render' ), 20, 2 );
 	}
 
@@ -75,60 +76,81 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 			return $block_content;
 		}
 
-		list( $visibility, $breakpoint ) = $this->get_visibility_settings( $attributes );
-
-		// always visible (normal state, visibility is not applied)
-		if ( $visibility === 'visible' && $breakpoint === CssMediaBreakpoints::BREAKPOINT_NAME_OFF ) {
-			return $block_content;
-		}
-
 		$class_id = BlockUtils::get_unique_class_id( $block_content );
-		$block_content  = BlockUtils::append_classes( $block_content, $class_id );
+
+		$custom_classes = $this->get_custom_classes( $attributes, $class_id );
+		$block_content  = BlockUtils::append_classes( $block_content, $custom_classes );
 
 		$this->add_styles( $attributes, $class_id );
 
 		return $block_content;
 	}
-	
+
 	/**
-	 * Helper to get visibility settings from block attributes
-	 * 
-	 * @return array [ visibility, breakpoint, breakpointCustomValue ]
+	 * @param array $attributes Block attributes.
+	 *
+	 * @return string[] Custom classes to be added on render.
 	 */
-	private function get_visibility_settings( $attributes ): array {
-		return 
-			array(
-				$attributes[ self::ATTRIBUTES ]['visibility'] ?? 'visible', // default to visible if not set
-				$attributes[ self::ATTRIBUTES ]['breakpoint'] ?? null,
-				$attributes[ self::ATTRIBUTES ]['breakpointCustomValue'] ?? null,
-			);
+	public function get_custom_classes( $attributes, $class_id ) {
+		$custom_classes = array();
+
+		$atts = $this->get_atts( $attributes[ self::ATTRIBUTES ] );
+
+		$visibility = $atts['visibility'];
+		$breakpoint = $atts['breakpoint'];
+
+		// hidden can applied even without breakpoint
+		if ( $visibility === 'hidden' || $breakpoint !== CssMediaBreakpoints::BREAKPOINT_NAME_OFF ) {
+			$custom_classes[] = $class_id;
+			$custom_classes[] = 'wpbbe-visibility-' . ( empty( $visibility ) ? 'visible' : $visibility );
+			// only to indicate that some breakpoint exists for this element
+			if ( $breakpoint !== CssMediaBreakpoints::BREAKPOINT_NAME_OFF ) {
+				$custom_classes[] = 'wpbbe-visibility-breakpoint-' . $breakpoint;
+			}
+		}
+
+		return apply_filters( 'wpbbe_blocks_get_custom_classes', $custom_classes, $attributes );
 	}
 
-	private function add_styles( $attributes, $class_id ): void {
-		list( $visibility, $breakpoint, $breakpoint_value ) = $this->get_visibility_settings( $attributes );
+	public function get_atts( $attributes ) {
+		return wp_parse_args(
+			$attributes,
+			array(
+				'visibility'            => '',
+				'breakpoint'            => '',
+				'breakpointCustomValue' => '',
+			)
+		);
+	}
+
+	public function add_styles( $attributes, $class_id ) {
+		$atts             = $this->get_atts( $attributes[ self::ATTRIBUTES ] );
+		$visibility       = $atts['visibility'];
+		$breakpoint       = $atts['breakpoint'];
+		$breakpoint_value = $atts['breakpointCustomValue'];
 
 		$switch_width = CssMediaBreakpoints::getSwitchWidth( $breakpoint, $breakpoint_value );
 
-		if ( null === $switch_width ) {
-			if ( $visibility === 'hidden' ) {
-				// if block is always hidden		
-				BlockUtils::add_styles_from_css_rules(
-					array(
-						array(
-							'selector'     => ".{$class_id}.{$class_id}",
-							'declarations' => array( 'display' => 'none !important' ),
-						),
-					)
+		if ( $switch_width ) {
+			$visibility_declaration = $visibility === 'hidden'
+				? array(
+					'selector'     => ".wpbbe-visibility-hidden.{$class_id}.{$class_id}",
+					'declarations' => array( 'display' => 'flex !important' ),
+				)
+				: array(
+					'selector'     => ".wpbbe-visibility-visible.{$class_id}.{$class_id}",
+					'declarations' => array( 'display' => 'none !important' ),
 				);
-			}
-			return;
-		}
 
-		BlockUtils::add_style_for_media_query(
-			"@media screen and (width ".($visibility === 'visible' ? '<=' : '>=')." {$switch_width})",
-			".{$class_id}.{$class_id}",
-			array( 'display' => 'none !important' )
-		);		
+			BlockUtils::add_styles_from_css_rules(
+				array(
+					array(
+						'selector'     => "@media screen and (width <= {$switch_width})",
+						'declarations' => array( $visibility_declaration ),
+					),
+				)
+			);
+		}
 	}
 
 	public static function get_title() {
