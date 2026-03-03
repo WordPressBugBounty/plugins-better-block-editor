@@ -8,6 +8,7 @@
   "textdomain": "better-block-editor",
   "supports": {
     "html": false,
+    "shadow": true,
     "spacing": {
       "margin": true,
       "padding": true

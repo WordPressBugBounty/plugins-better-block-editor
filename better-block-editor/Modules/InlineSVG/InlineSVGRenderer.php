@@ -41,6 +41,13 @@ class InlineSVGRenderer {
 			return '';
 		}
 
+		$href          = $attributes['href'] ?? '';
+		$aria_label    = $attributes['ariaLabel'] ?? '';
+		$is_button     = in_array( 'nsArrow', $custom_classes, true );
+		$is_decorative = ! $is_button && empty( $href ) && empty( $aria_label );
+
+		$contents = $this->prepare_svg_accessibility( $contents, $is_decorative );
+
 		if ( empty( $class_id ) ) {
 			$class_id = BlockUtils::create_unique_class_id();
 		}
@@ -48,14 +55,28 @@ class InlineSVGRenderer {
 		$base_classes    = array_merge( array( 'wpbbe-svg-icon', $class_id ), $custom_classes );
 		$wrapper_classes = BlockUtils::append_block_wrapper_classes( $base_classes );
 
+		$style = $attributes['style'] ?? array();
+
+		$wrapper_style = array();
+		$inner_style   = $style;
+
+		// Move margin to wrapper
+		if ( isset( $style['spacing']['margin'] ) ) {
+			$wrapper_style['spacing']['margin'] = $style['spacing']['margin'];
+
+			unset( $inner_style['spacing']['margin'] );
+		}
+
 		$options = array(
 			'context'  => 'core',
 			'prettify' => false,
-			'selector' => ".{$class_id} .svg-wrapper",
+			'selector' => ".{$class_id}.{$class_id}",
 		);
-		// apply native styles.
-		$style = $attributes['style'] ?? array();
-		StyleEngineModule::get_styles( $style, $options );
+		//add styles for wrapper.
+		StyleEngineModule::get_styles( $wrapper_style, $options );
+		$options['selector'] = ".{$class_id} .svg-wrapper";
+		//add styles for inner element.
+		StyleEngineModule::get_styles( $inner_style, $options );
 
 		// prepare custom styles.
 		$style = $this->collect_style_metadata( $attributes );
@@ -208,11 +229,6 @@ class InlineSVGRenderer {
 
 		StyleEngineModule::get_styles( $style, $options );
 
-		$href = $attributes['href'] ?? '';
-		if ( ! empty( $href ) ) {
-			$link_target = $attributes['linkTarget'] ?? '';
-			$link_rel    = $attributes['rel'] ?? '';
-		}
 
 		$extra_attr = '';
 
@@ -220,23 +236,79 @@ class InlineSVGRenderer {
 			$extra_attr .= ' style="' . esc_attr( $svg_wrapper_css ) . '"';
 		}
 
-		$output = '<div class="' . esc_attr( implode( ' ', $wrapper_classes ) ) . '">';
 
+		$output = '<div class="' . esc_attr( implode( ' ', $wrapper_classes ) ) . '">';
 		if ( ! empty( $href ) ) {
-			$output .= ' <a href="' . esc_url( $href ) . '" '
-					. $extra_attr
-					. 'class="svg-wrapper svg-link"'
-					. ( ! empty( $link_target ) ? ( 'target="' . esc_attr( $link_target ) . '"' ) : ' ' )
-					. ( ! empty( $link_rel ) ? ( 'rel="' . esc_attr( $link_rel ) . '"' ) : ' ' )
-				. '>' . $contents . '</a>';
+
+			$link_target = $attributes['linkTarget'] ?? '';
+			$link_rel    = $attributes['rel'] ?? '';
+
+			// Fallback accessible label if not provided
+			if ( empty( $aria_label ) ) {
+				$aria_label = __( 'Linked icon', 'better-block-editor' );
+			}
+
+			$output .= '<a href="' . esc_url( $href ) . '" '
+			           . 'class="svg-wrapper svg-link" '
+			           . 'aria-label="' . esc_attr( $aria_label ) . '" '
+			           . ( ! empty( $link_target ) ? 'target="' . esc_attr( $link_target ) . '" ' : '' )
+			           . ( ! empty( $link_rel ) ? 'rel="' . esc_attr( $link_rel ) . '" ' : '' )
+			           . $extra_attr
+			           . '>'
+			           . $contents
+			           . '</a>';
 		} else {
-			$output .= '<div class="svg-wrapper"' . $extra_attr . '>' . $contents . '</div>';
+			$tag = 'div';
+			if ($is_button) {
+				$tag = 'button';
+					$extra_attr .= '  type="button"';
+					if ( in_array( 'nsLeftArrow', $custom_classes, true ) ) {
+						$extra_attr .= ' aria-label="' . esc_attr__( 'Previous', 'better-block-editor' ) . '"';
+					} elseif ( in_array( 'nsRightArrow', $custom_classes, true ) ) {
+						$extra_attr .= ' aria-label="' . esc_attr__( 'Next', 'better-block-editor' ) . '"';
+					}
+			}
+			$output .= '<' . $tag . ' class="svg-wrapper"' . $extra_attr . '>' . $contents . '</' . $tag . '>';
 		}
 
-		$output .= ' </div>';
+		$output .= '</div>';
 
 		return $output;
 	}
+
+	/**
+	 * Inject accessibility attributes into inline SVG.
+	 *
+	 * @param string $svg          Raw SVG markup.
+	 * @param bool   $decorative   Whether the SVG is decorative.
+	 * @return string Modified SVG.
+	 */
+	private function prepare_svg_accessibility( $svg, $decorative = true ) {
+
+		if ( empty( $svg ) ) {
+			return '';
+		}
+
+		// Remove existing aria-hidden or focusable to avoid duplication.
+		$svg = preg_replace( '/\saria-hidden="[^"]*"/i', '', $svg );
+		$svg = preg_replace( '/\sfocusable="[^"]*"/i', '', $svg );
+
+		$attributes = ' focusable="false"';
+
+		if ( $decorative ) {
+			$attributes = ' aria-hidden="true" focusable="false"';
+		}
+		// Inject attributes into first <svg ...> occurrence.
+		$svg = preg_replace(
+			'/<svg\b/',
+			'<svg' . $attributes,
+			$svg,
+			1
+		);
+
+		return $svg;
+	}
+
 
 	/**
 	 * Collects style metadata from the attributes.

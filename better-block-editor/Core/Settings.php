@@ -143,10 +143,22 @@ class Settings {
 	 * @return array
 	 */
 	public static function get_user_defined_breakpoints() {
-		return (array) get_option(
-			self::build_user_defined_breakpoints_option_name(),
-			self::get_default_user_defined_breakpoints()
-		);
+		$option_name = self::build_user_defined_breakpoints_option_name();
+		$default     = self::get_default_user_defined_breakpoints();
+
+		$value = get_option( $option_name, $default );
+
+		$value = maybe_unserialize( $value );
+
+		if ( ! is_array( $value ) ) {
+			return $default;
+		}
+		foreach ( $value as $key => $item ) {
+			if ( ! is_array( $item ) ) {
+				return $default;
+			}
+		}
+		return $value;
 	}
 
 	private static function add_user_defined_breakpoint_options() {

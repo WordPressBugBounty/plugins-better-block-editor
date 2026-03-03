@@ -1,1 +1,1 @@
-<?php return array('dependencies' => array(), 'version' => '56ef419e391b884d1d4f');
+<?php return array('dependencies' => array('wpbbe-global-callback'), 'version' => '691a23cbc207f7bc94b6');
