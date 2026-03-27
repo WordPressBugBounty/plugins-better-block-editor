@@ -15,7 +15,12 @@ defined( 'ABSPATH' ) || exit;
 
 class Settings {
 
-	protected static $allowed_breakpoint_units = array( 'px', 'em', 'rem', 'vw', 'vh' );
+	public const TAB_FEATURES    = 'features';
+	public const TAB_BLOCKS      = 'blocks';
+	public const TAB_DESIGN      = 'design';
+	public const TAB_BREAKPOINTS = 'breakpoints';
+
+	protected static $allowed_breakpoint_units = array( 'px', 'rem' );
 
 	// WP permission to open the Settings Page
 	const CAPABILITY = 'manage_options';
@@ -25,6 +30,7 @@ class Settings {
 
 	const TEMPLATES_FOLDER_NAME = WPBBE_DIR . 'admin/templates/settings/';
 
+	protected static $pro_separator_added = false;
 
 	/**
 	 * Add the Settings Page in the WP admin menu.
@@ -66,48 +72,87 @@ class Settings {
 		);
 
 		foreach ( $modules_data as $module_data ) {
-			self::add_module_enable_checkbox(
-				$module_data['identifier'],
-				$module_data['title'],
-				array(
-					'label'       => $module_data['label'],
-					'description' => $module_data['description'],
-					'enabled'     => $module_data['enabled'],
-				)
-			);
+			self::add_module_enable_checkbox( $module_data );
 			// add module settings
-			if ( $module_data['enabled'] ) {
-				$classname = $module_data['classname'] ?? null;
-				if ( $classname && is_a( $classname, ConfigurableModuleInterface::class, true ) ) {
-					foreach ( $classname::get_settings() as $key => $field ) {
-						self::add_module_settigns( $module_data['identifier'], $key, $field );
-					}
+			$classname = $module_data['classname'] ?? null;
+			if ( $classname && is_a( $classname, ConfigurableModuleInterface::class, true ) ) {
+				foreach ( $classname::get_settings() as $key => $field ) {
+					self::add_module_settigns( $module_data, $key, $field );
 				}
 			}
 		}
 
 		self::add_user_defined_breakpoint_options();
+
+        add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_admin_assets' ) );
+	}
+
+	/**
+	 * Enqueue admin assets for settings page.
+	 * * @param string $hook_suffix The current admin page hook suffix.
+	 */
+	public static function enqueue_admin_assets( $hook_suffix ) {
+		// if not on the settings page, do not enqueue the script
+		if ( 'settings_page_' . self::MENU_PAGE_SLUG !== $hook_suffix ) {
+			return;
+		}
+		// add js to the page
+		$handle            = WPBBE_PLUGIN_ID . '__core-settings-script';
+		wp_register_script(
+			$handle,
+			WPBBE_URL . 'admin/js/settings/settings.js',
+			array(), // no dependencies for this script
+			WPBBE_VERSION, // use plugin version as script version
+			array(
+				'in_footer' => true, // load script in footer as we need to access the DOM elements
+			)
+		);
+
+		$translations = array(
+			'remove_breakpoint_confirm_message' => esc_js( __( 'Do you want to remove this breakpoint?', 'better-block-editor' ) ),
+			'remove_breakpoint_button_title'    => esc_js( __( 'Remove breakpoint', 'better-block-editor' ) ),
+		);
+
+		$inline_script = 'const WPBBE_RESPONSIVE_BREAKPOINT_SETTINGS = ' . wp_json_encode(
+				array(
+					'ALLOWED_SIZE_UNITS' => self::$allowed_breakpoint_units,
+					'WP_OPTION_NAME'     => self::build_user_defined_breakpoints_option_name(),
+					'I18N_TRANSLATIONS'  => $translations,
+				)
+			) . ';';
+
+		// initialize the Map to store breakpoints
+		$inline_script .= 'WPBBE_RESPONSIVE_BREAKPOINT_SETTINGS.BREAKPOINT_LIST = new Map();' . "\n";
+		// we use Map to keep breakpoints order (otherwise it will be sorted by keys)
+		foreach ( self::get_active_user_defined_breakpoints() as $key => $breakpoint ) {
+			$inline_script .= sprintf(
+				                  'WPBBE_RESPONSIVE_BREAKPOINT_SETTINGS.BREAKPOINT_LIST.set(\'%s\', %s);',
+				                  esc_js( (string) $key ),
+				                  wp_json_encode( $breakpoint )
+			                  ) . "\n";
+		}
+
+		wp_add_inline_script( $handle, $inline_script, 'before' );
+
+		wp_enqueue_script( $handle );
+		wp_enqueue_style(
+			WPBBE_PLUGIN_ID . '__core-settings-style',
+			WPBBE_URL . 'admin/css/settings/settings.css',
+			array(),
+			WPBBE_VERSION
+		);
 	}
 
 	public static function rest_settings_init() {
 		$modules_data = Plugin::instance()->modules_manager->get_managable_modules_data();
 		foreach ( $modules_data as $module_data ) {
-			self::add_module_enable_checkbox(
-				$module_data['identifier'],
-				$module_data['title'],
-				array(
-					'label'       => $module_data['label'],
-					'description' => $module_data['description'],
-					'enabled'     => $module_data['enabled'],
-				),
-				true
-			);
+			self::add_module_enable_checkbox( $module_data,true );
 			// add module settings
 			if ( $module_data['enabled'] ) {
 				$classname = $module_data['classname'] ?? null;
 				if ( $classname && is_a( $classname, ConfigurableModuleInterface::class, true ) ) {
 					foreach ( $classname::get_settings() as $key => $field ) {
-						self::add_module_settigns( $module_data['identifier'], $key, $field, true );
+						self::add_module_settigns( $module_data, $key, $field, true );
 					}
 				}
 			}
@@ -178,60 +223,13 @@ class Settings {
 			$option_name,
 			__( 'Breakpoints', 'better-block-editor' ),
 			function () {
-				self::parse_template( 'breakpoints', array() );
+				self::parse_template('_setting_wrapper', [
+                    'tab'   => self::TAB_BREAKPOINTS,
+                    'template' => 'breakpoints',
+				]);
 			},
 			self::MENU_PAGE_SLUG,
 			WPBBE_PLUGIN_ID . '_settings_section'
-		);
-
-		// add js to the page
-		$relative_filename = 'admin/js/settings/breakpoints.js';
-		$handle            = WPBBE_PLUGIN_ID . '__core-settings__breakpoints-script';
-		wp_register_script(
-			$handle,
-			WPBBE_URL . $relative_filename,
-			array(), // no dependencies for this script
-			WPBBE_VERSION, // use plugin version as script version
-			array(
-				'in_footer' => true, // load script in footer as we need to access the DOM elements
-			)
-		);
-
-		$translations = array(
-			'remove_breakpoint_confirm_message' => esc_js( __( 'Do you want to remove this breakpoint?', 'better-block-editor' ) ),
-			'remove_breakpoint_button_title'    => esc_js( __( 'Remove breakpoint', 'better-block-editor' ) ),
-		);
-
-		$inline_script = 'const WPBBE_RESPONSIVE_BREAKPOINT_SETTINGS = ' . wp_json_encode(
-			array(
-				'ALLOWED_SIZE_UNITS' => self::$allowed_breakpoint_units,
-				'WP_OPTION_NAME'     => self::build_user_defined_breakpoints_option_name(),
-				'I18N_TRANSLATIONS'  => $translations,
-			)
-		) . ';';
-
-		// initialize the Map to store breakpoints
-		$inline_script .= 'WPBBE_RESPONSIVE_BREAKPOINT_SETTINGS.BREAKPOINT_LIST = new Map();' . "\n";
-		// we use Map to keep breakpoints order (otherwise it will be sorted by keys)
-		foreach ( self::get_active_user_defined_breakpoints() as $key => $breakpoint ) {
-			$inline_script .= sprintf(
-				'WPBBE_RESPONSIVE_BREAKPOINT_SETTINGS.BREAKPOINT_LIST.set(\'%s\', %s);',
-				esc_js( (string) $key ),
-				wp_json_encode( $breakpoint )
-			) . "\n";
-		}
-
-		wp_add_inline_script( $handle, $inline_script, 'before' );
-
-		add_action(
-			'admin_enqueue_scripts',
-			function ( $hook_suffix ) use ( $handle ) {
-				// if not on the settings page, do not enqueue the script
-				if ( 'settings_page_' . self::MENU_PAGE_SLUG !== $hook_suffix ) {
-					return;
-				}
-				wp_enqueue_script( $handle );
-			}
 		);
 	}
 
@@ -278,7 +276,21 @@ class Settings {
 		return $options;
 	}
 
-	private static function add_module_enable_checkbox( $module_identifier, $title, $args = array(), $rest = false ) {
+	private static function add_module_enable_checkbox($args = array(), $rest = false ) {
+		$args = array_merge(
+			array(
+				'identifier'  => '',
+				'title'       => '',
+				'label'       => null,
+				'description' => null,
+				'enabled'     => false,
+				'tab'         => '',
+			),
+			$args
+		);
+
+		$module_identifier = $args['identifier'];
+		$title = $args['title'];
 		$name = self::build_module_enabled_option_name( $module_identifier );
 		register_setting(
 			WPBBE_PLUGIN_ID . '_settings',
@@ -299,19 +311,34 @@ class Settings {
 		if ( $rest ) {
 			return;
 		}
-		$args = array(
-			'identifier'  => $name,
-			'title'       => $title,
-			'label'       => $args['label'] ?? null,
-			'description' => $args['description'] ?? null,
-			'value'     => $args['enabled'],
-		);
-
+		// dirty trick: add the separator before premium features as setting field so we don't need to create
+		// separate section for premium features and can keep them separated in the UI with the separator element
+		if (!self::$pro_separator_added  && !$args['is_freemium']) {
+			add_settings_field(
+				'wpbbe_pro_separator',
+				self::parse_template('_pro_separator', [], true),
+				function () { },
+				self::MENU_PAGE_SLUG,
+				WPBBE_PLUGIN_ID . '_settings_section',
+				array( 'class' => 'wpbbe-separator-row wpbbe-plus-separator' )
+			);
+			self::$pro_separator_added = true;
+		}
+		$args['module_identifier'] = $module_identifier;
+		$args['identifier'] = $name;
+		$args['value'] = $args['enabled'];
+		$args['class'] = $args['is_freemium'] ? '' : 'wpbbe-plus-feature';
 		add_settings_field(
 			$name,
 			$title,
 			function ( $args ) {
-				self::parse_template( '_checkbox', $args );
+				self::parse_template('_setting_wrapper', [
+					'tab'   => $args['tab'],
+					'class' => 'wpbbe-module-enable',
+					'module' => $args['module_identifier'],
+					'template' => '_checkbox',
+					'template_args' => $args,
+				]);
 			},
 			self::MENU_PAGE_SLUG,
 			WPBBE_PLUGIN_ID . '_settings_section',
@@ -329,11 +356,18 @@ class Settings {
 	 *
 	 * @return void
 	 */
-	private static function parse_template( $template_name, $args ) {
+	public static function parse_template( $template_name, $args, $return = false ) {
 		$template_full_name = self::TEMPLATES_FOLDER_NAME . $template_name . '.php';
 
 		if ( ! is_file( $template_full_name ) || ! is_readable( $template_full_name ) ) {
 			throw new Exception( 'Can not read template: ' . esc_html( $template_full_name ) );
+		}
+
+		if ( $return ) {
+			ob_start();
+			include $template_full_name;
+
+			return ob_get_clean();
 		}
 
 		include $template_full_name;
@@ -409,7 +443,8 @@ class Settings {
 	 *
 	 * @return void
 	 */
-	private static function add_module_settigns( $module_identifier, $option_key, $field, $rest = false ) {
+	private static function add_module_settigns( $module_data, $option_key, $field, $rest = false ) {
+		$module_identifier = $module_data['identifier'];
 		$option_name = self::build_module_settings_name( $module_identifier ); // store all sub options as array
 
 		$type = $field['type'] ?? 'boolean';
@@ -425,15 +460,18 @@ class Settings {
 
 					switch ( $field['type'] ?? 'text' ) {
 						case 'multicheckbox':
-							$available             = $field['options'] ?? array();
+							$field_options             = $field['options'] ?? array();
 							$output[ $option_key ] = $output[ $option_key ] ?? array();
-							foreach ( $available as $key => $_ ) {
-								if ( ! empty( $input[ $option_key ][ $key ] ) ) {
-									$output[ $option_key ][ $key ] = 1;
-								} else {
+
+							foreach ( $field_options as $key => $_ ) {
+								$is_disabled = ! empty( $field_options[ $key ]['disabled'] );
+								//for disabled options we want keep the checkbox disabled and ignore changes from user (use default value)
+								if ( $is_disabled ) {
+									// remove disabled options from the saved settings
 									unset( $output[ $option_key ][ $key ] );
-								}
-							}
+								} else {
+									$output[ $option_key ][ $key ] = isset( $input[ $option_key ][ $key ] ) ? 1 : 0;
+								}}
 							break;
 						case 'checkbox':
 							$output[ $option_key ] = ! empty( $input[ $option_key ] ) ? 1 : 0;
@@ -456,27 +494,70 @@ class Settings {
 		if ( $rest ) {
 			return;
 		}
+		$title = $field['title'] ?? '';
 		add_settings_field(
 			$option_name . '__' . $option_key,
-			$field['label'],
-			function () use ( $module_identifier, $option_key, $field, $option_name ) {
-				$stored_value = get_option( $option_name, array() );
-				$value        = $stored_value[ $option_key ] ?? $field['default'];
+			$title,
+			function () use ( $module_data, $option_key, $field, $option_name ) {
+				$merged_value = self::get_setting(
+					$option_name,
+					$option_key,
+					$field['default'] ?? null
+				);
 
-				$template_name = '_' . $field['type'];
-				self::parse_template(
-					$template_name,
-					array_merge(
+				self::parse_template('_setting_wrapper', [
+					'tab'   => $module_data['tab'],
+					'class' => 'wpbbe-module-setting',
+					'module' => $module_data['identifier'],
+					'template' => '_' . $field['type'],
+					'template_args' => array_merge(
 						$field,
 						array(
 							'identifier' => $option_name . '[' . $option_key . ']',
-							'value'      => $value,
+							'value'      => $merged_value,
 						)
-					)
-				);
+					),
+				]);
 			},
 			self::MENU_PAGE_SLUG,
 			WPBBE_PLUGIN_ID . '_settings_section'
 		);
+	}
+
+
+	/**
+	 * Retrieves a specific setting value for a module, with support for default values and array merging.
+	 *
+	 * @param string $option_name The name of the option in the database (usually built with build_module_settings_name).
+	 * @param string $option_key  The specific key of the setting within the module's settings array.
+	 * @param mixed  $default     The default value to return if the setting is not found. Can be an array for settings that are arrays.
+	 *
+	 * @return mixed The setting value, merged with defaults if it's an array, or the default value if not set.
+	 */
+	public static function get_setting( $option_name, $key, $default = null ) {
+		$stored = get_option( $option_name, null );
+
+		// If there is no stored value for the module settings, return the default value
+		if ( $stored === null ) {
+			return $default;
+		}
+
+		if ( null === $key ) {
+			return $stored;
+		}
+
+		$value = $stored[ $key ] ?? null;
+
+		// array merge (add new defaults, keep user values)
+		if ( is_array( $default ) && is_array( $value ) ) {
+			return array_replace( $default, $value );
+		}
+
+		// if value exists use it
+		if ( $value !== null ) {
+			return $value;
+		}
+		// if value does not exist return default
+		return $default;
 	}
 }

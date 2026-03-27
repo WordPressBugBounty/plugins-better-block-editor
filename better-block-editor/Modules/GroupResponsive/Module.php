@@ -28,7 +28,7 @@ final class Module extends ResponsiveBlockModuleBase implements ManagableModuleI
 	}
 
 	public static function get_label() {
-		return __( 'Add responsiveness settings to Group block.', 'better-block-editor' );
+		return __( 'Add Responsive Settings to Group block.', 'better-block-editor' );
 	}
 
 	protected function need_to_apply_changes( $block_content, $block, $wp_block_instance ) {

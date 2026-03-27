@@ -9,6 +9,7 @@ namespace BetterBlockEditor\Modules\UploadSVG;
 
 use BetterBlockEditor\Base\ModuleBase;
 use BetterBlockEditor\Base\ManagableModuleInterface;
+use BetterBlockEditor\Core\Settings;
 use enshrined\svgSanitize\Sanitizer;
 
 defined( 'ABSPATH' ) || exit;
@@ -492,10 +493,14 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 	}
 
 	public static function get_title() {
-		return __( 'Inline SVG', 'better-block-editor' );
+		return __( 'BBE SVG Icon', 'better-block-editor' );
+	}
+
+	public static function get_tab() {
+		return Settings::TAB_BLOCKS;
 	}
 
 	public static function get_label() {
-		return __( 'Allow to upload and display the SVG icon', 'better-block-editor' );
+		return __( 'Allow uploading SVG images, and enable the BBE SVG Icon block.', 'better-block-editor' );
 	}
 }

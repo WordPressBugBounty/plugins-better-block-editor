@@ -27,7 +27,7 @@ class Module extends ResponsiveBlockModuleBase implements ManagableModuleInterfa
 	}
 
 	public static function get_label() {
-		return __( 'Add Responsive settings to Buttons block.', 'better-block-editor' );
+		return __( 'Add Responsive Settings to Buttons block.', 'better-block-editor' );
 	}
 
 	protected function need_to_apply_changes( $block_content, $block, $wp_block_instance ) {

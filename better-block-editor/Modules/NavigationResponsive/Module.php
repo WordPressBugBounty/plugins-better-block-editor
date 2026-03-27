@@ -110,6 +110,6 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 	}
 
 	public static function get_label() {
-		return __( 'Add responsiveness settings to Navigation block.', 'better-block-editor' );
+		return __( 'Add Responsive Settings to Navigation block.', 'better-block-editor' );
 	}
 }

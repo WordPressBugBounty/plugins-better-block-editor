@@ -9,6 +9,7 @@
 
 namespace BetterBlockEditor\Modules\DemoContent;
 
+use BetterBlockEditor\Base\ManagableModuleInterface;
 use BetterBlockEditor\Base\ModuleBase;
 use BetterBlockEditor\Modules\DemoContent\AjaxHandlers\ImportContentAjaxHandler;
 use BetterBlockEditor\Modules\DemoContent\AjaxHandlers\ThemeInstallAjaxHandler;
@@ -22,7 +23,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Bootstraps Demo Content importer admin experience.
  */
-class Module extends ModuleBase {
+class Module extends ModuleBase implements ManagableModuleInterface {
 
 	const MODULE_IDENTIFIER = 'demo-content';
 	const IS_CORE_MODULE    = true;
@@ -44,6 +45,19 @@ class Module extends ModuleBase {
 	 * @var string|null
 	 */
 	protected $page_hook = null;
+
+	public static function get_title() {
+		return __( 'Site Templates', 'better-block-editor' );
+	}
+
+	public static function get_label() {
+		return __('Enable BBE pre-made Site Templates', 'better-block-editor' );
+	}
+
+	public static function get_settings_order() {
+		return 50;
+	}
+
 
 	/**
 	 * Setup module hooks.

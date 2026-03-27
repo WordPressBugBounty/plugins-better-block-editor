@@ -69,8 +69,6 @@ class Plugin {
 
 			return $links;
 		}, 10, 2 );
-
-		$this->bundled_assets_manager = new BundledAssetsManager( WPBBE_PLUGIN_ID, WPBBE_DIST, WPBBE_URL_DIST );
 	}
 
 	/**
@@ -101,6 +99,31 @@ class Plugin {
 		$this->modules_manager = new ModulesManager();
 		$this->modules_manager->setup_hooks();
 
+		// in case there is BBE Pro Kit we have to add BBE Pro Kit bundles as dependencies for our bundles
+		// so they are loaded before our bundles (based on defer loading strategy).
+		$dependencies =array();  
+
+		if ( defined('BBE_PRO_KIT_PLUGIN_ID')) {
+			$supported_bundles = array(
+				BundledAssetsManager::EDITOR_BUNDLE,
+				BundledAssetsManager::EDITOR_CONTENT_BUNDLE,
+				BundledAssetsManager::VIEW_BUNDLE,
+			);
+
+			foreach ( $supported_bundles as $bundle ) {
+				$dependencies[ $bundle ] = array(
+					BundledAssetsManager::build_handle( BBE_PRO_KIT_PLUGIN_ID, $bundle, 'script' )
+				);
+			}
+		}
+		
+		$this->bundled_assets_manager = new BundledAssetsManager( 
+			WPBBE_PLUGIN_ID, 
+			WPBBE_DIST, 
+			WPBBE_URL_DIST, 
+			$dependencies
+		);
+
 		if ( $this->is_asset_bundle_mode() ) {
 			if ( is_admin() ) {
 				$this->bundled_assets_manager->process_editor_assets();
@@ -129,7 +152,6 @@ class Plugin {
 				return $module_data['is_freemium'] && ! $module_data['enabled'];
 			}
 		);
-
 		return empty( $disabled_modules );
 	}
 

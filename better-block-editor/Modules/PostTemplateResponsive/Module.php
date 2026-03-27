@@ -27,7 +27,7 @@ class Module extends ResponsiveBlockModuleBase implements ManagableModuleInterfa
 	}
 
 	public static function get_label() {
-		return __( 'Add responsiveness settings to Post Template block.', 'better-block-editor' );
+		return __( 'Add Responsive Settings to Post Template block when used in Grid view.', 'better-block-editor' );
 	}
 
 	protected function need_to_apply_changes( $block_content, $block, $wp_block_instance ) {

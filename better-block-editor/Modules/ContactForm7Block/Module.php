@@ -11,6 +11,7 @@ use BetterBlockEditor\Base\ConfigurableModuleInterface;
 use BetterBlockEditor\Base\ManagableModuleInterface;
 use BetterBlockEditor\Core\BlockUtils;
 use BetterBlockEditor\Base\ModuleBase;
+use BetterBlockEditor\Core\Settings;
 use BetterBlockEditor\Modules\StyleEngine\Module as StyleEngineModule;
 
 defined( 'ABSPATH' ) || exit;
@@ -165,13 +166,18 @@ class Module extends ModuleBase implements ManagableModuleInterface, Configurabl
 		return $data;
 	}
 
+	public static function get_tab() {
+		return Settings::TAB_BLOCKS;
+	}
+
 	public static function get_title() {
-		return __( 'Better Contact Form 7 Block', 'better-block-editor' );
+		return __( 'BBE Contact Form 7', 'better-block-editor' );
 	}
 
 	public static function get_label() {
-		return __( 'Enable Better Contact Form 7 block.', 'better-block-editor' );
+		return __( 'Enable BBE Contact Form 7 block.', 'better-block-editor' );
 	}
+
 	public function render( $attributes ) {
 		$id = intval( $attributes['id'] ?? 0 );
 		if ( ! $id ) {
@@ -234,9 +240,9 @@ class Module extends ModuleBase implements ManagableModuleInterface, Configurabl
 		return array(
 			self::DESIGN_STYLES_OPTION => array(
 				'type'        => 'checkbox',
-				'label'       => __( 'Better Contact Form 7 Styles', 'better-block-editor' ),
+				'label'       => __( 'Enable form styling.', 'better-block-editor' ),
 				'default'     => 1,
-				'description' => __( 'Enable configurable styles for Better Contact Form 7 block.', 'better-block-editor' ),
+				'description' => __( 'When enabled, form styling settings become available in the BBE Contact Form 7 block. If disabled, default theme styles will be used.', 'better-block-editor' ),
 			),
 		);
 	}

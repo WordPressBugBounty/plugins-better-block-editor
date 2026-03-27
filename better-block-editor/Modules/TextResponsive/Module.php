@@ -18,7 +18,7 @@ class Module extends ResponsiveBlockModuleBase implements ManagableModuleInterfa
 	const MODULE_IDENTIFIER = 'text-responsive';
 	const ASSETS_BUILD_PATH = 'editor/blocks/__all__/text-responsive/';
 
-	const SETTINGS_ORDER = 1400;
+	const SETTINGS_ORDER = 920;
 
 	const BLOCK_NAMES = array(
 		'core/post-title',
@@ -32,7 +32,7 @@ class Module extends ResponsiveBlockModuleBase implements ManagableModuleInterfa
 	}
 
 	public static function get_label() {
-		return __( 'Add responsive text alignment settings to Header, Paragraph, Post Title and Post Excerpt blocks.', 'better-block-editor' );
+		return __( 'Add Responsive text alignment settings to Header, Paragraph, Post Title and Post Excerpt blocks.', 'better-block-editor' );
 	}
 
 	protected function need_to_apply_changes( $block_content, $block, $wp_block_instance ) {

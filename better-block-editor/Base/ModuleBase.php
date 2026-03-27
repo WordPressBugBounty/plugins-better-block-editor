@@ -117,6 +117,13 @@ abstract class ModuleBase implements ModuleInterface {
 	/**
 	 * {inheritdocs}
 	 */
+	public static function get_tab() {
+		return Settings::TAB_FEATURES;
+	}
+
+	/**
+	 * {inheritdocs}
+	 */
 	public static function get_title() {
 		return self::class;
 	}
@@ -290,14 +297,7 @@ abstract class ModuleBase implements ModuleInterface {
 	 */
 	protected function get_option( string $key = null, $default = null ) {
 		$option_name = Settings::build_module_settings_name( $this->get_identifier() );
-
-		$options = get_option( $option_name, array() );
-
-		if ( null === $key ) {
-			return $options;
-		}
-
-		return $options[ $key ] ?? $default;
+		return Settings::get_setting($option_name, $key, $default );
 	}
 
 	protected function set_option( string $key, $value ) {

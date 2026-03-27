@@ -1,9 +1,9 @@
 <?php
 /**
  * Adds responsive visibility settings to all blocks.
- * Standard approach with ResponsiveBlockModuleBase can not be used here 
+ * Standard approach with ResponsiveBlockModuleBase can not be used here
  * as visibility='hidden' must work even without any responsive settings
- * 
+ *
  * @package BetterBlockEditor
  */
 
@@ -23,7 +23,7 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 	const ASSETS_BUILD_PATH        = 'editor/blocks/__all__/visibility/';
 	const PLUGIN_ASSETS_BUILD_PATH = 'editor/plugins/visibility/';
 
-	const SETTINGS_ORDER = 100;
+	const SETTINGS_ORDER = 990;
 
 	const ATTRIBUTES = 'wpbbeVisibility';
 
@@ -89,14 +89,14 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 
 		return $block_content;
 	}
-	
+
 	/**
 	 * Helper to get visibility settings from block attributes
-	 * 
+	 *
 	 * @return array [ visibility, breakpoint, breakpointCustomValue ]
 	 */
 	private function get_visibility_settings( $attributes ): array {
-		return 
+		return
 			array(
 				$attributes[ self::ATTRIBUTES ]['visibility'] ?? 'visible', // default to visible if not set
 				$attributes[ self::ATTRIBUTES ]['breakpoint'] ?? null,
@@ -111,7 +111,7 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 
 		if ( null === $switch_width ) {
 			if ( $visibility === 'hidden' ) {
-				// if block is always hidden		
+				// if block is always hidden
 				BlockUtils::add_styles_from_css_rules(
 					array(
 						array(
@@ -128,7 +128,7 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 			"@media screen and (width ".($visibility === 'visible' ? '<=' : '>=')." {$switch_width})",
 			".{$class_id}.{$class_id}",
 			array( 'display' => 'none !important' )
-		);		
+		);
 	}
 
 	public static function get_title() {
@@ -136,6 +136,6 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 	}
 
 	public static function get_label() {
-		return __( 'Add responsive Visibility settings to all blocks.', 'better-block-editor' );
+		return __( 'Add Responsive Visibility Settings to all blocks.', 'better-block-editor' );
 	}
 }

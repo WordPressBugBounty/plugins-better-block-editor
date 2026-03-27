@@ -130,9 +130,10 @@ final class ModulesManager {
 				'title'          => $classname::get_title(),
 				'label'          => $classname::get_label(),
 				'description'    => $classname::get_description(),
+				'tab'            => $classname::get_tab(),
 				'settings_order' => $classname::get_settings_order(),
 				'enabled'        => self::is_module_enabled( $classname ),
-				'is_freemium'    => is_a( $classname, 'BetterBlockEditor\Base\ModuleInterface', true ),
+				'is_freemium'    => !is_a( $classname, 'BbeProKit\Base\ModuleBasePro', true ),
 				'classname'      => $classname,
 				'active'         => isset( $this->modules[ $classname::get_identifier() ] ),
 			);

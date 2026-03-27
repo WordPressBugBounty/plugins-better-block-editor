@@ -19,7 +19,7 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 	const MODULE_IDENTIFIER = 'text-style-from-element';
 	const ASSETS_BUILD_PATH = 'editor/blocks/__all__/text-style-from-element/';
 
-	const SETTINGS_ORDER = 1500;
+	const SETTINGS_ORDER = 930;
 
 	const ATTRIBUTE_TEXT_STYLE   = 'wpbbeTextStyleFromElement';
 	const ATTRIBUTE_ROLE_HEADING = 'wpbbeRoleHeading';
@@ -33,7 +33,7 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 	const WP_CORE_HEADING_CLASSNAME = 'wp-block-heading';
 
 	const TEXT_STYLE_CLASSNAME_PREFIX = 'wpbbe-text-style-from-element-';
-	
+
 	public function init(): void {
 
 		parent::init();
@@ -56,8 +56,8 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 		$theme_json_data = $theme_json_object->get_data();
 
 		// settings from the "All Headings" element
-		$all_headings_styling_data = $this->get_text_style_to_borrow( 
-			$theme_json_data['styles']['elements'][ self::ALL_HEADINGS_ELEMENT ] ?? array() 
+		$all_headings_styling_data = $this->get_text_style_to_borrow(
+			$theme_json_data['styles']['elements'][ self::ALL_HEADINGS_ELEMENT ] ?? array()
 		);
 
 		if ( ! empty( $all_headings_styling_data ) ) {
@@ -68,28 +68,28 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 			StyleEngineModule::get_styles(
 				$all_headings_styling_data,
 				array(
-					'selector' =>  implode( ', ', 
-						array_map( 
-							function ( $heading_element ) { 
+					'selector' =>  implode( ', ',
+						array_map(
+							function ( $heading_element ) {
 								return str_repeat('.' . self::TEXT_STYLE_CLASSNAME_PREFIX . $heading_element, 2);
-							}, 
-							self::HEADING_ELEMENTS 
-						) 
+							},
+							self::HEADING_ELEMENTS
+						)
 					),
 					'context'  => 'core',
 				)
 			);
 		}
-		
+
 
 		// individual heading (h1, h2, etc.) settings
 		foreach ( $theme_json_data['styles']['elements'] ?? array() as $element_name => $element_settings ) {
 			if ( in_array( $element_name, self::HEADING_ELEMENTS, true ) ) {
 				$heading_element_styling_data = $this->get_text_style_to_borrow( $element_settings );
-				
+
 				if ( empty( $heading_element_styling_data ) ) {
 					continue;
-				}	
+				}
 
 				StyleEngineModule::get_styles(
 					$heading_element_styling_data,
@@ -135,7 +135,7 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 		if ( in_array( $use_style_from_element, self::HEADING_ELEMENTS, true ) ) {
 			// also add the core heading class if the style is taken from a heading element
 			$cssClasses[] = self::WP_CORE_HEADING_CLASSNAME;
-		}	
+		}
 
 		$block_content = BlockUtils::append_classes( $block_content, $cssClasses);
 
@@ -143,11 +143,11 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 	}
 
 	public static function get_title(): string {
-		return __( 'Text Blocks Style', 'better-block-editor' );
+		return __( 'Change Style for Text Blocks', 'better-block-editor' );
 	}
 
 	public static function get_label(): string {
-		return __( 'Add Style setting for Heading, Paragraph, Post Title, and Post Excerpt blocks.', 'better-block-editor' );
+		return __( 'Add a "Change style" setting for Heading, Paragraph, Post Title, and Post Excerpt blocks. Select a visual style (H1–H6, Paragraph) for text blocks without changing their HTML tag.', 'better-block-editor' );
 	}
 
 	/**

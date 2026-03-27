@@ -10,6 +10,7 @@ namespace BetterBlockEditor\Modules\DesignSystemParts;
 use BetterBlockEditor\Base\ModuleBase;
 use BetterBlockEditor\Base\ManagableModuleInterface;
 use BetterBlockEditor\Base\ConfigurableModuleInterface;
+use BetterBlockEditor\Core\Settings;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -24,6 +25,10 @@ class Module extends ModuleBase implements ManagableModuleInterface, Configurabl
 		return false;
 	}
 
+	public static function get_tab() {
+		return Settings::TAB_DESIGN;
+	}
+
 	public static function get_title() {
 		return __( 'Design System', 'better-block-editor' );
 	}
@@ -36,13 +41,13 @@ class Module extends ModuleBase implements ManagableModuleInterface, Configurabl
 		add_filter( 'block_editor_settings_all', array( $this, 'modify_block_editor_settings' ), 10 );
 		// add filter on very late stage to change theme data just before using it in FE
 		add_filter( 'wp_theme_json_data_theme', array( $this, 'modify_theme_json_values' ), 1000 );
-		// exclude parts of design system, later add an option to settings page to control it
+		// exclude parts of design system
 		add_filter( 'wpbbe_design_system_parts', array( $this, 'filter_design_system_parts' ), 10, 2 );
 		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
 	}
 
 	public function filter_design_system_parts( $parts, $context ) {
-		$active_parts = $this->get_option( self::ACTIVE_PARTS, array() );
+		$active_parts = $this->get_option( self::ACTIVE_PARTS, self::get_settings()[ self::ACTIVE_PARTS ]['default'] );
 		$map = array(
 			'color'      => array( 'colorPalette', 'colorGradients' ),
 			'typography' => array( 'fontSizes' ),
@@ -196,12 +201,13 @@ class Module extends ModuleBase implements ManagableModuleInterface, Configurabl
 		return array(
 			self::ACTIVE_PARTS => array(
 				'type'        => 'multicheckbox',
-				'label'       => __( 'Design System Parts', 'better-block-editor' ),
+				'title'       => __( 'Design System Parts', 'better-block-editor' ),
 				'options'     => array(
 					'color'      => __( 'Colors', 'better-block-editor' ),
 					'typography' => __( 'Typography', 'better-block-editor' ),
+					'spacing'    => array( 'label' => __( 'Spacing', 'better-block-editor' ), 'disabled' => true )
 				),
-				'default'     => array( '' ),
+				'default'     => array(  'color'=> 1, 'typography' => 1, 'spacing' => 1 ),
 				'description' => __( 'Choose active parts of the design system.', 'better-block-editor' ),
 			),
 		);
