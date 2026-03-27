@@ -134,6 +134,20 @@ final class BundledAssetsManager {
 	}
 
 	/**
+	 * Backward compatibility method to add inline JS code just after bundle code (see wp_add_inline_script())
+	 * 
+	 * @deprecated since version 1.4.0. Use add_inline_js_to_footer() instead.
+	 * 
+	 * @param string $bundle_name Bundle name (see self::*_BUNDLE) to add code with appropriate hook
+	 * @param string $js JS code to be added as inline script
+	 *
+	 * @return bool
+	 */
+	public function add_inline_js_after_bundle( $bundle_name, $js ): bool {
+		return $this->add_inline_js_to_footer( $bundle_name, $js );
+	}
+
+	/**
 	 * Build a handle name for a given plugin ID, bundle key and type (script or style). 
 	 *
 	 * @param string $plugin_id   Plugin ID.

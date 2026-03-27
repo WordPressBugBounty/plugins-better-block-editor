@@ -4,7 +4,7 @@ Tags:              responsive, block-editor, templates, animation, page-builder,
 Requires at least: 6.8
 Tested up to:      6.9
 Requires PHP:      7.4
-Stable tag:        1.4.0
+Stable tag:        1.4.1
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 Better Block Editor (BBE) — responsive layout controls, on-scroll animations, and pre-made site templates for Block Editor.
@@ -68,6 +68,8 @@ Better Block Editor is distributed under the GPLv2 or later. You are free to use
 * Official website — [https://wpbbe.io/](https://wpbbe.io/)
 * User Guide — [https://docs.wpbbe.io/](https://docs.wpbbe.io/)
 == Changelog ==
+= 1.4.1 (27-03-2026) =
+1. Fixed a fatal error caused by a rare combination of plugins.
 = 1.4.0 (27-03-2026) =
 1. Improved Better Block Editor settings interface.
 2. Added option to remove Site Templates link from admin menu.
