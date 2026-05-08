@@ -295,7 +295,7 @@ abstract class ModuleBase implements ModuleInterface {
 	 *
 	 * @return mixed
 	 */
-	protected function get_option( string $key = null, $default = null ) {
+	protected function get_option( ?string $key = null, $default = null ) {
 		$option_name = Settings::build_module_settings_name( $this->get_identifier() );
 		return Settings::get_setting($option_name, $key, $default );
 	}

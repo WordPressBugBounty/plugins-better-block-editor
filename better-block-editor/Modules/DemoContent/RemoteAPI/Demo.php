@@ -102,7 +102,7 @@ class Demo {
 			return $wp_filesystem->errors;
 		}
 
-		$request_url     = self::API_DEMO_CONTENT_DOWNLOAD_URL . '/' . sanitize_file_name( $id . '.zip' );
+		$request_url     = self::API_DEMO_CONTENT_DOWNLOAD_URL . sanitize_file_name( $id . '.zip' );
 		$remote_response = wp_safe_remote_get(
 			$request_url,
 			array(

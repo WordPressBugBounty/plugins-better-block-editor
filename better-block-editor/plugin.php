@@ -149,9 +149,16 @@ class Plugin {
 		$disabled_modules = array_filter(
 			$this->modules_manager->get_managable_modules_data(),
 			function ( $module_data ) {
-				return $module_data['is_freemium'] && ! $module_data['enabled'];
+				// hardcoded check to exclude Design System Parts module from asset bundle mode check
+				// this module is disabled by default and has no effect on asset bundle mode
+				if ($module_data['identifier'] === Modules\DesignSystemParts\Module::MODULE_IDENTIFIER) {
+					return false;
+				}
+
+				return ! $module_data['enabled'];
 			}
 		);
+
 		return empty( $disabled_modules );
 	}
 

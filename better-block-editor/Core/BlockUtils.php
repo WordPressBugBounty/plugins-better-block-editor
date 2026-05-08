@@ -26,7 +26,7 @@ class BlockUtils {
 
 		$tags = new WP_HTML_Tag_Processor( $block_content );
 		if ( $tags->next_tag() ) {
-			foreach ( $tags->class_list() as $class_name ) {
+			foreach ( ($tags->class_list() ?? array()) as $class_name ) {
 				$prefix_fine = $prefix === substr( $class_name, 0, strlen( $prefix ) );
 				$sufix_fine  = preg_match( '/\d/', substr( $class_name, strlen( $prefix ) ) );
 				if ( $prefix_fine && $sufix_fine ) {
