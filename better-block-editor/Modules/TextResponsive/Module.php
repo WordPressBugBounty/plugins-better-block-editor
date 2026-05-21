@@ -51,7 +51,7 @@ class Module extends ResponsiveBlockModuleBase implements ManagableModuleInterfa
 
 		BlockUtils::add_style_for_media_query(
 			"@media screen and (width <= {$this->switch_width})",
-			'body .' . $class_id,
+			"body .{$class_id}.{$class_id}",
 			array( 'text-align' => $alignment )
 		);
 

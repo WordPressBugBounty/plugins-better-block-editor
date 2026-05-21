@@ -37,7 +37,7 @@ abstract class ResponsiveBlockModuleBase extends ModuleBase {
 	 *
 	 * @param string   $block_content Block content.
 	 * @param array    $block         Block data (including name and attributes).
-	 * @param WP_Block $wp_block_instance The WP_Block class instance.
+	 * @param \WP_Block $wp_block_instance The WP_Block class instance.
 	 *
 	 * @return string  Block content with applied responsive settings.
 	 */
@@ -75,6 +75,13 @@ abstract class ResponsiveBlockModuleBase extends ModuleBase {
 		return $this->render( $block_content, $block, $wp_block_instance );
 	}
 
+	/**
+	 * Get a responsive setting value.
+	 *
+	 * @param string $name The name of the setting.	
+	 * @param mixed  $default The default value if the setting is not found.
+	 * @return mixed The setting value.
+	 */
 	protected function get_responsive_setting( $name, $default = null ) {
 		return ResponsiveBlockUtils::get_setting( $this->attributes, $name, $default );
 	}
@@ -84,7 +91,7 @@ abstract class ResponsiveBlockModuleBase extends ModuleBase {
 	 *
 	 * @param string   $block_content Block content.
 	 * @param array    $block         Block data (including name and attributes).
-	 * @param WP_Block $instance      The block instance.
+	 * @param \WP_Block $wp_block_instance The block instance.
 	 *
 	 * @return bool True if changes are needed, false otherwise.
 	 */
@@ -95,7 +102,7 @@ abstract class ResponsiveBlockModuleBase extends ModuleBase {
 	 *
 	 * @param string   $block_content Block content.
 	 * @param array    $block         Block data (including name and attributes).
-	 * @param WP_Block $instance      The block instance.
+	 * @param \WP_Block $wp_block_instance The block instance.
 	 *
 	 * @return string  Rendered block content.
 	 */

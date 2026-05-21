@@ -10,7 +10,9 @@ namespace BetterBlockEditor\Modules\RowResponsive;
 use BetterBlockEditor\Base\ManagableModuleInterface;
 use BetterBlockEditor\Base\ResponsiveBlockModuleBase;
 use BetterBlockEditor\Core\BlockUtils;
-use BetterBlockEditor\Core\ResponsiveBlockUtils;
+use BetterBlockEditor\Core\ResponsiveBlockUtils as Responsiveness;
+use BetterBlockEditor\Core\ToolPanels\ToolPanelsCss;
+
 
 defined( 'ABSPATH' ) || exit;
 
@@ -44,12 +46,11 @@ final class Module extends ResponsiveBlockModuleBase implements ManagableModuleI
 		return $block_content;
 	}
 
-	private function add_styles( $class_id ) {
-		$justification           = ResponsiveBlockUtils::get_setting( $this->attributes, 'justification', 'left' );
-		$orientation             = ResponsiveBlockUtils::get_setting( $this->attributes, 'orientation', 'row' );
-		$vertical_alignment      = ResponsiveBlockUtils::get_setting( $this->attributes, 'verticalAlignment', 'top' );
-		$gap                     = ResponsiveBlockUtils::get_setting( $this->attributes, 'gap', null );
-		$disable_position_sticky = ResponsiveBlockUtils::get_setting( $this->attributes, 'disablePositionSticky', false );
+	private function add_styles( string $class_id ) {
+		$justification           = Responsiveness::get_setting( $this->attributes, 'justification', 'left' );
+		$orientation             = Responsiveness::get_setting( $this->attributes, 'orientation', 'row' );
+		$vertical_alignment      = Responsiveness::get_setting( $this->attributes, 'verticalAlignment', 'top' );
+		$disable_position_sticky = Responsiveness::get_setting( $this->attributes, 'disablePositionSticky', false );
 
 		$vertical_alignment_map = array(
 			'top'           => 'flex-start',
@@ -99,10 +100,10 @@ final class Module extends ResponsiveBlockModuleBase implements ManagableModuleI
 			$declarations['position'] = 'static';
 		}
 
-		// add gap if provided
-		if ( $gap !== null ) {
-			$declarations['gap'] = $gap . ' !important';
-		}
+		$declarations = array_merge( 
+			$declarations, 
+			ToolPanelsCss::build_rules( Responsiveness::get_settings( $this->attributes ), true ) 
+		);
 
 		$css_rules = array(
 			array(

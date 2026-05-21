@@ -59,16 +59,25 @@ class ResponsiveBlockUtils {
 	 * Retrieves a responsive setting from the block attributes.
 	 *
 	 * @param array  $attributes The block attributes.
-	 * @param string $setting_name The name of the responsive setting to retrieve.
+	 * @param string $responsive_setting_name The name of the responsive setting to retrieve.
 	 * @param mixed  $default      The default value to return if the setting is not set.
-	 *
 	 * @return mixed|null The value of the responsive setting, or null if not set.
 	 */
-	public static function get_setting( $attributes, $responsive_setting_name, $default = null ) {
+	public static function get_setting( array $attributes, string $responsive_setting_name, $default = null ) {
 		return $attributes[ self::ATTRIBUTES_GROUP_NAME ][ self::SETTINGS_KEY ][ $responsive_setting_name ] ?? $default;
 	}
 
-	public static function get_switch_width( $attributes ) {
+	/**
+	 * Retrieves responsive settings from the block attributes.
+	 *
+	 * @param array  $attributes The block attributes.
+	 * @return array The responsive settings, or an empty array if not set.
+	 */
+	public static function get_settings( array $attributes ): array {
+		return $attributes[ self::ATTRIBUTES_GROUP_NAME ][ self::SETTINGS_KEY ] ?? array();
+	}
+
+	public static function get_switch_width( array $attributes ) {
 		return CssMediaBreakpoints::getSwitchWidth(
 			$attributes[ self::ATTRIBUTES_GROUP_NAME ][ self::BREAKPOINT_KEY ] ?? null,
 			$attributes[ self::ATTRIBUTES_GROUP_NAME ][ self::BREAKPOINT_CUSTOM_VALUE_KEY ] ?? null

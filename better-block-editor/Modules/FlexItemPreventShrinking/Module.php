@@ -36,7 +36,7 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 
 		$is_parent_layout_flex = ( $block['parentLayout']['type'] ?? null !== 'flex' );
 		if ( $is_parent_layout_flex && ( $block['attrs'][ self::ATTRIBUTES ] ?? null === true ) ) {
-			$block_content = BlockUtils::append_classes( $block_content, array( 'wpbbe__flex-item-prevent-shrinking' ) );
+			$block_content = BlockUtils::append_classes( $block_content, array( 'wpbbe-flex-item-prevent-shrinking' ) );
 		}
 
 		return $block_content;

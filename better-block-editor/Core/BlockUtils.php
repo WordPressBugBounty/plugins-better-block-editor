@@ -366,4 +366,32 @@ class BlockUtils {
 		return $value;
 	}
 
+	/**
+	 * Convert a preset string (e.g., 'var:preset|color|primary') 
+	 * to a CSS variable format (e.g., 'var(--wp--preset--color--primary)').
+	 * 
+	 * @param string $preset_string The preset string to convert.
+	 * @return string The converted CSS variable string.
+	 */
+	public static function css_preset_to_css_variable( string $preset_string ): string {
+		return preg_replace( '/var:preset\|(.+)\|([a-z0-9-]+)/', 'var(--wp--preset--$1--$2)', $preset_string );
+	}
+
+	/**
+	 * Convert a camelCase string to kebab-case.
+	 * Useful for converting JS style definitions to CSS property names.
+	 *
+	 * @param string $string The camelCase string.
+	 * @return string The kebab-case string.
+	 */
+	public static function camel_case_to_kebab_case( string $string ): string {
+		// Replace non-alphanumeric characters with -
+    	$string = preg_replace('/[^a-z0-9]+/i', '-', $string);
+
+		// Replace camelCase transitions
+		$string = preg_replace('/([a-z\d])([A-Z])/', '$1-$2', $string);
+		
+		return strtolower(trim($string, '-'));
+	}
+
 }

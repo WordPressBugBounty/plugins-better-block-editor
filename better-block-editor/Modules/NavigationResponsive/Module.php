@@ -38,7 +38,7 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 
 		$attributes = isset( $block['attrs'] ) ? $block['attrs'] : null;
 
-		if ( ! ( $attributes[ self::ATTRIBUTES ][ self::ATTRIBUTE_BREAKPOINT ] ?? false ) ) {
+		if ( ! $this->is_responsive_overlay_menu( $attributes ) ) {
 			return $block_content;
 		}
 
@@ -50,11 +50,16 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 	}
 
 	private function add_styles( $attributes, $class_id ) {
+		// in case we are in responsive mode ('mobile' overlay menu as in original implementation)
+		// we want use mobile breakpoint (as it's shown in interface)
+		$breakpoint = $attributes[ self::ATTRIBUTES ][ self::ATTRIBUTE_BREAKPOINT ] 
+			?? ( $this->is_responsive_overlay_menu( $attributes ) ? CssMediaBreakpoints::BREAKPOINT_NAME_MOBILE : null );
+
 		$switch_width = CssMediaBreakpoints::getSwitchWidth(
-			$attributes[ self::ATTRIBUTES ][ self::ATTRIBUTE_BREAKPOINT ],
+			$breakpoint,
 			$attributes[ self::ATTRIBUTES ][ self::ATTRIBUTE_BREAKPOINT_CUSTOM_VALUE ] ?? null
 		);
-
+	
 		// if we can not determine switch width we always show menu expanded (no overlay icon)
 		$switch_width = $switch_width ?: '0px';
 
@@ -103,6 +108,16 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 		);
 
 		BlockUtils::add_styles_from_css_rules( $css_rules );
+	}
+
+	/**
+	 * Check if we are in responsive mode: 'mobile' is the default value in block attributes for overlayMenu, 
+	 * so if it's not 'never' or 'always' it is 'mobile' 
+	 * @param array $attributes Block attributes
+	 * @return bool true if we are in responsive mode, false otherwise
+	 */
+	private function is_responsive_overlay_menu( $attributes ): bool {
+		return !in_array(($attributes['overlayMenu'] ?? null), array('never', 'always'), true);
 	}
 
 	public static function get_title() {

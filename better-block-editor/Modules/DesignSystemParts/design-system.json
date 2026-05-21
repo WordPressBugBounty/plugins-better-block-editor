@@ -4,22 +4,22 @@
 		"color": {
 			"gradients": [
 				{
-					"gradient": "linear-gradient(180deg,rgb(248,250,252) 50%,rgba(255,255,255,1) 50%)",
+					"gradient": "linear-gradient(105deg,#27303f 50%,#0284c0 100%)",
 					"name": "Gradient 1",
 					"slug": "bbe-gradient-1"
 				},
 				{
-					"gradient": "linear-gradient(180deg,rgba(255,255,255,1) 50%,rgb(248,250,252) 50%)",
+					"gradient": "linear-gradient(105deg,rgba(255,255,255,1) 50%,rgb(248,250,252) 100%)",
 					"name": "Gradient 2",
 					"slug": "bbe-gradient-2"
 				},
 				{
-					"gradient": "linear-gradient(180deg,rgb(248,250,252) 21%,rgba(255,255,255,1) 99%)",
+					"gradient": "linear-gradient(180deg,rgb(248,250,252) 21%,rgba(255,255,255,0) 99%)",
 					"name": "Gradient 3",
 					"slug": "bbe-gradient-3"
 				},
 				{
-					"gradient": "linear-gradient(180deg,rgba(255,255,255,1) 0%,rgb(248,250,252) 80%)",
+					"gradient": "linear-gradient(180deg,rgba(255,255,255,0) 0%,rgb(248,250,252) 80%)",
 					"name": "Gradient 4",
 					"slug": "bbe-gradient-4"
 				},
@@ -34,12 +34,12 @@
 					"slug": "bbe-gradient-6"
 				},
 				{
-					"gradient": "linear-gradient(180deg,rgb(240,250,255) 20%,rgba(255,255,255,1) 100%)",
+					"gradient": "linear-gradient(180deg,rgb(240,250,255) 20%,rgba(255,255,255,0) 100%)",
 					"name": "Gradient 7",
 					"slug": "bbe-gradient-7"
 				},
 				{
-					"gradient": "linear-gradient(180deg,rgba(255,255,255,1) 0%,rgb(240,250,255) 80%)",
+					"gradient": "linear-gradient(180deg,rgba(255,255,255,0) 0%,rgb(240,250,255) 80%)",
 					"name": "Gradient 8",
 					"slug": "bbe-gradient-8"
 				},
@@ -69,7 +69,7 @@
 					"slug": "bbe-gradient-13"
 				},
 				{
-					"gradient": "linear-gradient(180deg,rgb(7,94,133) 0%,rgb(7,43,59) 100%)",
+					"gradient": "linear-gradient(180deg,rgb(7,94,133) 0%,#38bcf8 100%)",
 					"name": "Gradient 14",
 					"slug": "bbe-gradient-14"
 				}

@@ -10,7 +10,8 @@ namespace BetterBlockEditor\Modules\GridResponsive;
 use BetterBlockEditor\Base\ManagableModuleInterface;
 use BetterBlockEditor\Base\ResponsiveBlockModuleBase;
 use BetterBlockEditor\Core\BlockUtils;
-use BetterBlockEditor\Core\ResponsiveBlockUtils;
+use BetterBlockEditor\Core\ResponsiveBlockUtils as Responsiveness;
+use BetterBlockEditor\Core\ToolPanels\ToolPanelsCss;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -42,24 +43,23 @@ final class Module extends ResponsiveBlockModuleBase implements ManagableModuleI
 
 		$css_rules = array();
 
-		if ( ResponsiveBlockUtils::get_setting( $this->attributes, 'stack', false ) ) {
+		if ( Responsiveness::get_setting( $this->attributes, 'stack', false ) ) {
 			$css_rules['grid-template-columns'] = 'repeat(1, 1fr)';
 		}
 
 		// on FE we use static as default (as it's done in WP core)
-		if ( ResponsiveBlockUtils::get_setting( $this->attributes, 'disablePositionSticky', false ) ) {
+		if ( Responsiveness::get_setting( $this->attributes, 'disablePositionSticky', false ) ) {
 			$css_rules['position'] = 'static';
 		}
 
-		$gap = ResponsiveBlockUtils::get_setting( $this->attributes, 'gap', null );
-		// need strict comparison here as gap may be 0
-		if ( null !== $gap ) {
-			$css_rules['gap'] = $gap . ' !important';
-		}
+		$css_rules = array_merge(
+			$css_rules,
+			ToolPanelsCss::build_rules( Responsiveness::get_settings( $this->attributes ), true )
+		);
 
-		ResponsiveBlockUtils::add_style_for_media_query(
+		Responsiveness::add_style_for_media_query(
 			"@media screen and (width <= {$this->switch_width})",
-			'.' . $class_id . '.' . $class_id,
+			".{$class_id}.{$class_id}",
 			$css_rules
 		);
 
