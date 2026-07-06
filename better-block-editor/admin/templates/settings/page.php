@@ -12,6 +12,9 @@ defined( 'ABSPATH' ) || exit; ?>
 		Settings::TAB_BREAKPOINTS => array(
 			'label' => __( 'Breakpoints', 'better-block-editor' ),
 		),
+		Settings::TAB_ANIMATION => array(
+			'label' => __( 'Animation Default Settings', 'better-block-editor' ),
+		),
 		Settings::TAB_DESIGN => array(
 			'label' => __( 'Design System', 'better-block-editor' ),
 		),

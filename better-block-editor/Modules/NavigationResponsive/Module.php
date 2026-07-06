@@ -42,7 +42,7 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 			return $block_content;
 		}
 
-		$class_id      = BlockUtils::get_unique_class_id( $block_content );
+		$class_id      = BlockUtils::get_unique_class_id( $block_content, $block );
 		$block_content = BlockUtils::append_classes( $block_content, array( $class_id, 'wpbbe-responsive-navigation' ) );
 		$this->add_styles( $attributes, $class_id );
 

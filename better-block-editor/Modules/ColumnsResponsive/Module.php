@@ -51,7 +51,7 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 			return $block_content;
 		}
 
-		$class_id      = BlockUtils::get_unique_class_id( $block_content );
+		$class_id      = BlockUtils::get_unique_class_id( $block_content, $block );
 		$block_content = BlockUtils::append_classes( $block_content, array( $class_id ) );
 
 		$column_selector = ".wp-block-columns:not(.is-not-stacked-on-mobile) > .wp-block-column.{$class_id}[style*=flex-basis]";
@@ -83,7 +83,7 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 
 		$attributes = $block['attrs'] ?? array();
 
-		$class_id      = BlockUtils::get_unique_class_id( $block_content );
+		$class_id      = BlockUtils::get_unique_class_id( $block_content, $block );
 		$block_content = BlockUtils::append_classes( $block_content, array( $class_id ) );
 
 		// native attribute isStackedOnMobile is changed together with our the custom attribute

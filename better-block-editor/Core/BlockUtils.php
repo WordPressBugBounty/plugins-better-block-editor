@@ -17,25 +17,42 @@ class BlockUtils {
 
 	const BLOCK_UNIQUE_CLASSNAME_PREFIX = 'wpbbe-';
 
-	static function create_unique_class_id(): string {
+
+	/**
+	 * Generates a unique class name for a block based on its attributes.
+	 *
+	 * @param array $block The $block->parsed_block, full block, including name and attributes.
+	 * @return string A unique class name for the block.
+	 */
+	static function create_unique_class_id( array $block = [] ): string {
+		if ( ! empty( $block ) ) {
+			return self::BLOCK_UNIQUE_CLASSNAME_PREFIX . substr( md5( serialize( $block ) ), 0, 8 );
+		}
 		return wp_unique_prefixed_id( self::BLOCK_UNIQUE_CLASSNAME_PREFIX );
 	}
 
-	static function get_unique_class_id( $block_content ): string {
+	/**
+	 * Retrieves a unique class name from the block content or generates one if not found.
+	 *
+	 * @param string $block_content The block content.
+	 * @param array  $block         The $block->parsed_block, full block, including name and attributes.
+	 * @return string A unique class name for the block.
+	 */
+	static function get_unique_class_id( $block_content, array $block = [] ): string {
 		$prefix = self::BLOCK_UNIQUE_CLASSNAME_PREFIX;
 
 		$tags = new WP_HTML_Tag_Processor( $block_content );
 		if ( $tags->next_tag() ) {
 			foreach ( ($tags->class_list() ?? array()) as $class_name ) {
 				$prefix_fine = $prefix === substr( $class_name, 0, strlen( $prefix ) );
-				$sufix_fine  = preg_match( '/\d/', substr( $class_name, strlen( $prefix ) ) );
+				$sufix_fine  = preg_match( '/^[a-z0-9]+$/i', substr( $class_name, strlen( $prefix ) ) );
 				if ( $prefix_fine && $sufix_fine ) {
 					return $class_name;
 				}
 			}
 		}
 
-		return self::create_unique_class_id();
+		return self::create_unique_class_id( $block );
 	}
 
 	/**
@@ -367,9 +384,9 @@ class BlockUtils {
 	}
 
 	/**
-	 * Convert a preset string (e.g., 'var:preset|color|primary') 
+	 * Convert a preset string (e.g., 'var:preset|color|primary')
 	 * to a CSS variable format (e.g., 'var(--wp--preset--color--primary)').
-	 * 
+	 *
 	 * @param string $preset_string The preset string to convert.
 	 * @return string The converted CSS variable string.
 	 */
@@ -390,7 +407,7 @@ class BlockUtils {
 
 		// Replace camelCase transitions
 		$string = preg_replace('/([a-z\d])([A-Z])/', '$1-$2', $string);
-		
+
 		return strtolower(trim($string, '-'));
 	}
 

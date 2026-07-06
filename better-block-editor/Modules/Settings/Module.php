@@ -9,6 +9,7 @@ namespace BetterBlockEditor\Modules\Settings;
 
 use BetterBlockEditor\Base\ModuleBase;
 use BetterBlockEditor\Core\Settings;
+use BetterBlockEditor\Core\Settings\Animation\Settings as AnimationSettings;
 use BetterBlockEditor\Plugin;
 
 defined( 'ABSPATH' ) || exit;
@@ -40,8 +41,8 @@ class Module extends ModuleBase {
 			function () {
 				$this->enqueue_assets( $this::EDITOR_ASSET_KEY );
 				// inject some additional data to JS
-				// it's important to do as late as possible so all modules can add their data 
-				// via wpbbe_script_data filter (sometimes we need there core data to be 
+				// it's important to do as late as possible so all modules can add their data
+				// via wpbbe_script_data filter (sometimes we need there core data to be
 				// formed or functions initialized which happens on late stages of code execution)
 				$this->enqueue_block_editor_inline_data();
 			},
@@ -69,6 +70,12 @@ class Module extends ModuleBase {
 		$data = array(
 			'features'    => Plugin::instance()->get_active_features_keys(),
 			'breakpoints' => $this->get_user_defined_breakpoints_data(),
+			'animation'   => array(
+				'onHoverDefaults'              => AnimationSettings::get_on_hover_defaults(),
+				'onScrollDefaults'             => AnimationSettings::get_on_scroll_defaults(),
+				'timingFunctionOptions' => AnimationSettings::get_timing_function_options(),
+				'effectOptions' => AnimationSettings::get_effect_options(),
+			),
 		);
 
 		$data = apply_filters( 'wpbbe_script_data', $data );
@@ -78,7 +85,6 @@ class Module extends ModuleBase {
 			'window.WPBBE_DATA = ' . wp_json_encode( $data ) . ';'
 		);
 	}
-
 
 	/**
 	 * Get all user defined breakpoints data

@@ -39,7 +39,7 @@ final class Module extends ResponsiveBlockModuleBase implements ManagableModuleI
 	}
 
 	protected function render( $block_content, $block, $wp_block_instance ) {
-		$class_id      = BlockUtils::get_unique_class_id( $block_content );
+		$class_id      = BlockUtils::get_unique_class_id( $block_content, $block );
 		$block_content = BlockUtils::append_classes( $block_content, $class_id );
 		$this->add_styles( $class_id );
 

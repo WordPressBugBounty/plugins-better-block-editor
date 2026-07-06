@@ -7,6 +7,7 @@
 
 namespace BetterBlockEditor\Modules\InlineSVG;
 
+use BetterBlockEditor\Core\BlockUtils;
 use BetterBlockEditor\Plugin;
 use BetterBlockEditor\Base\ModuleBase;
 
@@ -37,8 +38,9 @@ class Module extends ModuleBase {
 		return __( 'Allow to upload and display an SVG icon', 'better-block-editor' );
 	}
 
-	public function render( $attributes ) {
+	public function render( $attributes, $content, $block ) {
 		$renderer = new InlineSVGRenderer();
-		return $renderer->render( $attributes );
+		$class_id = BlockUtils::create_unique_class_id( $block->parsed_block );
+		return $renderer->render( $attributes, [], '', $class_id );
 	}
 }

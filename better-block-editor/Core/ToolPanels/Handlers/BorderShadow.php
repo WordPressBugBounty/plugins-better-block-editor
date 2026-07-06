@@ -85,16 +85,16 @@ class BorderShadow extends HandlerBase {
 		$css_rules = array();
 
 		if ( $shadow_attribute ) {
-			$css_rules += $this->compile_css_rules( array( 'shadow' => $shadow_attribute ) );
+			$css_rules += $this->compile_css_rules( array( 'box-shadow' => $shadow_attribute ) );
 		}
 
-		// handle radius (4 corners).
+		// handle border radius (4 corners).
 		if ( ! empty( $border_attributes['radius'] ) ) {
 			$radius_css_rules = $this->compile_css_rules( $border_attributes['radius'] );
 
 			// rename keys -> add "-radius".
 			foreach ( array_keys( $radius_css_rules ) as $key ) {
-				$new_key               = $key . '-radius';
+				$new_key               = 'border-' . $key . '-radius';
 				$css_rules[ $new_key ] = $radius_css_rules[ $key ];
 			}
 
@@ -102,15 +102,28 @@ class BorderShadow extends HandlerBase {
 			unset( $border_attributes['radius'] );
 		}
 
-		// always process all sides.
-		foreach ( self::BORDER_SIDES as $side ) {
-			$side_attributes = $this->has_split_borders( $border_attributes )
-				? ( $border_attributes[ $side ] ?? array() )
-				: $border_attributes;
+		// border (with or without split sides).
+		$border_rules = array();
+		if (! $this->has_split_borders( $border_attributes ) ) {
+			// if no split borders, compile all border attributes together (same values for all sides).
+			$border_rules = $this->compile_css_rules( $border_attributes );
+		} else {	
+			// always process all sides.
+			foreach ( self::BORDER_SIDES as $side ) {
+				$side_attributes = array();
+				foreach ( $border_attributes[ $side ] ?? array() as $key => $value ) {
+					// add side prefix to attribute key, e.g. "border-top-width".
+					$side_attributes[ 'border-' . $side . '-' . $key ] = $value;
+				}
 
-			$css_rules += $this->compile_css_rules( $side_attributes );
-
+				$border_rules += $this->compile_css_rules( $side_attributes );
+			}
 		}
+		// add prefix to border rules
+		foreach ( $border_rules as $key => $value ) {
+			// add "var(--prefix-)" to each css rule value, e.g. "var(--brd-top-width)".
+			$css_rules[ 'border-'.$key ] = $value;
+		}	
 
 		return $css_rules;
 	}

@@ -35,7 +35,7 @@ class Module extends ResponsiveBlockModuleBase implements ManagableModuleInterfa
 	}
 
 	protected function render( $block_content, $block, $wp_block_instance ) {
-		$class_id      = BlockUtils::get_unique_class_id( $block_content );
+		$class_id      = BlockUtils::get_unique_class_id( $block_content, $block );
 		$block_content = BlockUtils::append_classes( $block_content, array( $class_id ) );
 
 		$orientation   = $this->get_responsive_setting( 'orientation', 'row' );

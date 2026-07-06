@@ -46,7 +46,7 @@ class Module extends ResponsiveBlockModuleBase implements ManagableModuleInterfa
 			return $block_content;
 		}
 
-		$class_id      = BlockUtils::get_unique_class_id( $block_content );
+		$class_id      = BlockUtils::get_unique_class_id( $block_content, $block );
 		$block_content = BlockUtils::append_classes( $block_content, array( $class_id ) );
 
 		BlockUtils::add_style_for_media_query(

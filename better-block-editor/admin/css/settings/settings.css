@@ -1,9 +1,11 @@
 .wpbbe-hidden-row {
 	display: none !important;
 }
+
 .wpbbe-tabs {
 	visibility: hidden;
 }
+
 .wpbbe-tabs.wpbbe-ready {
 	visibility: visible;
 }
@@ -25,7 +27,7 @@
 	width: 70px;
 }
 
-.wpbbe-setting  .user-defined-breakpoint.item select {
+.wpbbe-setting .user-defined-breakpoint.item select {
 	width: 60px;
 }
 
@@ -35,5 +37,9 @@
 	line-height: inherit;
 	font-size: 1.5em;
 	vertical-align: middle;
-	cursor: pointer;"
+	cursor: pointer;
+}
+
+.wpbbe-animation-setting-row th {
+	vertical-align: middle;
 }

@@ -1,10 +1,6 @@
 <?php defined( 'ABSPATH' ) || exit; ?>
 
 <fieldset>
-	<legend class="screen-reader-text">
-		<span><?php echo esc_html( $args['title'] ); ?></span>
-	</legend>
-
 	<label for="<?php echo esc_attr( $args['identifier'] ); ?>">
 		<input
 			type="checkbox"

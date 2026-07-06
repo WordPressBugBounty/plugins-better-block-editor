@@ -38,7 +38,7 @@ final class Module extends ResponsiveBlockModuleBase implements ManagableModuleI
 	}
 
 	protected function render( $block_content, $block, $wp_block_instance ) {
-		$class_id      = BlockUtils::get_unique_class_id( $block_content );
+		$class_id      = BlockUtils::get_unique_class_id( $block_content, $block );
 		$block_content = BlockUtils::append_classes( $block_content, $class_id );
 
 		$this->add_styles( $class_id );
@@ -52,6 +52,17 @@ final class Module extends ResponsiveBlockModuleBase implements ManagableModuleI
 		$css_rules = ToolPanelsCss::build_rules( $responsive_settings, true );
 		$gap_value = $css_rules['gap'] ?? null;
 		unset($css_rules['gap']);
+
+		// if aspect ratio is set, then height and min-height should be unset (it's done the same way as in WP)
+		// it's set as inline CSS in WP so use !important to override inline styles
+		if ( $responsive_settings['dimensions'][ 'aspectRatio' ] ?? false ) {
+			$css_rules[ 'min-height' ] = 'unset !important';
+			$css_rules[ 'height' ] = 'unset !important';
+		}
+
+		if ( $responsive_settings['dimensions'][ 'minHeight' ] ?? false ) {
+			$css_rules[ 'aspect-ratio' ] = 'unset !important';
+		}
 
 		// all other rules (except gap) have to be applied to the block itself 
 		ResponsiveBlockUtils::add_style_for_media_query(

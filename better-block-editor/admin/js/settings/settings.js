@@ -140,6 +140,11 @@
 		} );
 	}
 
+	function getActiveTab() {
+		const activeTab = document.querySelector( '.nav-tab-active' );
+		return activeTab?.dataset?.tab;
+	}
+
 	// tab click
 	tabs.forEach( ( tab ) => {
 		tab.addEventListener( 'click', ( e ) => {
@@ -169,19 +174,32 @@
 			targets.forEach( ( el ) => {
 				// if the module setting is in a different tab, we should not show it even if the module is enabled
 				const tab = el.dataset.tab;
-				const activeTab = document.querySelector( '.nav-tab-active' )?.dataset.tab;
 
-				const visible = isEnabled && tab === activeTab;
+				const visible = isEnabled && tab === getActiveTab();
 
 				toggleTabRow( el, visible );
 			} );
 
 			updateTabVisibility();
 			updatePlusSeparator();
+			updateSeparatorsVisibility();
 		};
 		cb.addEventListener( 'change', update );
 		update();
 	} );
+
+	function updateSeparatorsVisibility() {
+		const activeTab = getActiveTab();
+
+		document
+			.querySelectorAll( '.wpbbe-separator-row:has(.wpbbe-separator-title[data-tab])' )
+			.forEach( ( separator ) => {
+				separator.classList.toggle(
+					'wpbbe-hidden-row',
+					separator.querySelector( '.wpbbe-separator-title' )?.dataset?.tab !== activeTab
+				);
+			} );
+	}
 
 	function updatePlusSeparator() {
 		if ( ! plusSeparator ) {
