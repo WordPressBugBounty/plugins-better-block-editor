@@ -25,7 +25,10 @@
         "width": true
       }
     },
-    "__experimentalGlobalStyles": true
+    "__experimentalGlobalStyles": true,
+    "interactivity": {
+      "clientNavigation": true
+    }
   },
   "attributes": {
     "color": {

@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'dream-theme/better-block-editor',
-        'pretty_version' => 'v1.6.0',
-        'version' => '1.6.0.0',
-        'reference' => 'bc4bafa3f48f1981795a80b59a4b5eb2c756258f',
+        'pretty_version' => 'v1.7.0',
+        'version' => '1.7.0.0',
+        'reference' => '48aabccb46a1d6a4c8663ac7397739877314ce16',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -20,9 +20,9 @@
             'dev_requirement' => true,
         ),
         'dream-theme/better-block-editor' => array(
-            'pretty_version' => 'v1.6.0',
-            'version' => '1.6.0.0',
-            'reference' => 'bc4bafa3f48f1981795a80b59a4b5eb2c756258f',
+            'pretty_version' => 'v1.7.0',
+            'version' => '1.7.0.0',
+            'reference' => '48aabccb46a1d6a4c8663ac7397739877314ce16',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

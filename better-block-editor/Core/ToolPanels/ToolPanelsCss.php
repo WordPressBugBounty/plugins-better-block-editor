@@ -22,6 +22,7 @@ class ToolPanelsCss {
 		self::HANDLER_NAMESPACE_BASE . 'BorderShadow',
 		self::HANDLER_NAMESPACE_BASE . 'Dimensions',
 		self::HANDLER_NAMESPACE_BASE . 'Typography',
+		self::HANDLER_NAMESPACE_BASE . 'HoverColor',
 	);
 
 	/**

@@ -493,7 +493,7 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 	}
 
 	public static function get_title() {
-		return __( 'BBE SVG Icon', 'better-block-editor' );
+		return __( 'SVG Icon', 'better-block-editor' );
 	}
 
 	public static function get_tab() {
@@ -501,6 +501,6 @@ class Module extends ModuleBase implements ManagableModuleInterface {
 	}
 
 	public static function get_label() {
-		return __( 'Allow uploading SVG images, and enable the BBE SVG Icon block.', 'better-block-editor' );
+		return __( 'Allow uploading SVG images, and enable the SVG Icon block.', 'better-block-editor' );
 	}
 }

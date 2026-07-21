@@ -1,1 +1,1 @@
-<?php return array('dependencies' => array('wp-i18n', 'wpbbe-global-callback'), 'version' => 'c7eabcbb2ee09591d15f');
+<?php return array('dependencies' => array('wp-i18n', 'wpbbe-global-callback'), 'version' => 'ceb28cb9bd65a825242a');
