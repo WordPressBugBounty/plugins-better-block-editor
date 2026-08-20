@@ -1,10 +1,10 @@
 === Better Block Editor (BBE) ===
 Contributors:      dreamtheme
 Tags:              responsive, block-editor, templates, animation, page-builder, gutenberg
-Requires at least: 7.0
-Tested up to:      7.0
+Requires at least: 7.1
+Tested up to:      7.1
 Requires PHP:      7.4
-Stable tag:        1.7.0
+Stable tag:        1.8.0
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 Better Block Editor (BBE) — responsive layout controls, on-scroll animations, and pre-made site templates for Block Editor.
@@ -68,6 +68,8 @@ Better Block Editor is distributed under the GPLv2 or later. You are free to use
 * Official website — [https://wpbbe.io/](https://wpbbe.io/)
 * User Guide — [https://docs.wpbbe.io/](https://docs.wpbbe.io/)
 == Changelog ==
+= 1.8.0 (20-08-2026) =
+1. WordPress 7.1 compatibility update
 = 1.7.0 (21-07-2026) =
 1. Animation on Scroll now works in AJAX loops.
 = 1.6.0 (06-07-2026) =
