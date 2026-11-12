@@ -195,6 +195,26 @@ class Settings {
 	}
 
 	/**
+	 * Returns the active user-defined breakpoints formatted for theme.json's
+	 * e.g. `array( 'mobile' => '480px', 'tablet' => '960px' )`.
+	 *
+	 * @return array<string, string>
+	 */
+	public static function get_viewport_settings() {
+		$viewport = array();
+
+		foreach ( self::get_active_user_defined_breakpoints() as $key => $breakpoint ) {
+			if ( ! in_array( $key, array( 'mobile', 'tablet' ), true ) ) {
+				continue;
+			}
+
+			$viewport[ $key ] = $breakpoint['value'] . $breakpoint['unit'];
+		}
+
+		return $viewport;
+	}
+
+	/**
 	 * Retrieves the user-defined breakpoints from the options if set,
 	 * otherwise the default user-defined breakpoints.
 	 *
@@ -440,16 +460,6 @@ class Settings {
 	 */
 	private static function build_module_enabled_option_name( $module_identifier ) {
 		return WPBBE_PLUGIN_ID . '__module__' . $module_identifier . '__enabled';
-	}
-
-	/**
-	 * Builds the base option name used to store module-specific settings.
-	 *
-	 * @param string $module_identifier Module identifier.
-	 * @return string Option name used for module settings.
-	 */
-	public static function build_module_option_name( $module_identifier ) {
-		return WPBBE_PLUGIN_ID . '__module__' . $module_identifier;
 	}
 
 	/**

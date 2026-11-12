@@ -33,7 +33,7 @@ final class BundledAssetsManager {
 	private $plugin_dist;
 
 	/**
-	 * @var array Dependencies for each bundle (optional, can be empty). 
+	 * @var array Dependencies for each bundle (optional, can be empty).
 	 * Format: array( 'bundle_key' => array( 'dependency_handle1', 'dependency_handle2' ) )
 	 */
 	private $dependencies;
@@ -42,7 +42,7 @@ final class BundledAssetsManager {
 		$this->plugin_id       = $plugin_id;
 		$this->plugin_dist     = $plugin_dist;
 		$this->plugin_dist_url = $plugin_dist_url;
-		$this->dependencies = $dependencies;
+		$this->dependencies    = $dependencies;
 	}
 
 	/**
@@ -95,35 +95,35 @@ final class BundledAssetsManager {
 	/**
 	 * Add inline JS code to footer
 	 * We use fake handler to non existing script to add inline code to footer
-	 * Bundle name is required to add code with appropriate hook (editor, editor-content, view) 
-	 * 
+	 * Bundle name is required to add code with appropriate hook (editor, editor-content, view)
+	 *
 	 * @param string $bundle_name Bundle name (see self::*_BUNDLE) to add code with appropriate hook
 	 * @param string $js JS code to be added as inline script
 	 *
 	 * @return bool
 	 */
-	public function add_inline_js_to_footer($bundle_name, $js ): bool {
-		
+	public function add_inline_js_to_footer( $bundle_name, $js ): bool {
+
 		$handle = $this->build_script_handle( 'footer-inline' ) . '__handler';
 
-		// register only once 
+		// register only once
 		if ( ! wp_script_is( $handle, 'registered' ) ) {
 			wp_register_script(
 				$handle,
-				false, // no source file 
-				array(), 
-				false, 
+				false, // no source file
+				array(),
+				null,
 				array( 'in_footer' => true ) // it won't be deferred because we add inline script to it
 			);
 
 			$action = $this->get_action_for_bundle( $bundle_name );
-			
+
 			if ( null === $action ) {
 				return false;
 			}
 
 			add_action(
-				$action, 
+				$action,
 				function () use ( $handle ) {
 					wp_enqueue_script( $handle );
 				}
@@ -135,9 +135,9 @@ final class BundledAssetsManager {
 
 	/**
 	 * Backward compatibility method to add inline JS code just after bundle code (see wp_add_inline_script())
-	 * 
+	 *
 	 * @deprecated since version 1.4.0. Use add_inline_js_to_footer() instead.
-	 * 
+	 *
 	 * @param string $bundle_name Bundle name (see self::*_BUNDLE) to add code with appropriate hook
 	 * @param string $js JS code to be added as inline script
 	 *
@@ -148,7 +148,7 @@ final class BundledAssetsManager {
 	}
 
 	/**
-	 * Build a handle name for a given plugin ID, bundle key and type (script or style). 
+	 * Build a handle name for a given plugin ID, bundle key and type (script or style).
 	 *
 	 * @param string $plugin_id   Plugin ID.
 	 * @param string $bundle_key  Bundle key (one of 'editor', 'editor-content', 'view').
@@ -162,18 +162,18 @@ final class BundledAssetsManager {
 
 	/**
 	 * Get the appropriate action hook for enqueuing assets based on the bundle name.
-	 * 
+	 *
 	 * @param string $bundle_name Bundle name(key) to get action for (see self::*_BUNDLE)
 	 *
 	 * @return string|null Action hook name or null if bundle name is invalid.
 	 */
 	private function get_action_for_bundle( $bundle_name ): ?string {
 		$map = array(
-			self::EDITOR_BUNDLE => 'enqueue_block_editor_assets',
+			self::EDITOR_BUNDLE         => 'enqueue_block_editor_assets',
 			self::EDITOR_CONTENT_BUNDLE => 'enqueue_block_assets',
-			self::VIEW_BUNDLE => 'wp_enqueue_scripts',
+			self::VIEW_BUNDLE           => 'wp_enqueue_scripts',
 		);
-		
+
 		return array_key_exists( $bundle_name, $map ) ? $map[ $bundle_name ] : null;
 	}
 
@@ -197,8 +197,7 @@ final class BundledAssetsManager {
 		}
 
 		// merge "native" dependencies from asset file with any additional dependencies provided added manually
-		$script_dependencies = array_merge( $asset_file['dependencies'], (array)($this->dependencies[ $key ] ?? array()) );
-
+		$script_dependencies = array_merge( $asset_file['dependencies'], (array) ( $this->dependencies[ $key ] ?? array() ) );
 
 		wp_register_script(
 			$this->build_script_handle( $key ),
@@ -207,7 +206,7 @@ final class BundledAssetsManager {
 			$asset_file['version'],
 			// it's important to use defer for all scripts in the bundle
 			// otherwise the order of execution will be broken and it may cause errors
-			// we add to header as it's common practice 
+			// we add to header as it's common practice
 			array(
 				'strategy'  => 'defer',
 				'in_footer' => false,

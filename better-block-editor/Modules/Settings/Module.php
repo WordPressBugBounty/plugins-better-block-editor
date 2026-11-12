@@ -50,6 +50,38 @@ class Module extends ModuleBase {
 		);
 	}
 
+	/**
+	 * {inheritdocs}
+	 */
+	public function setup_hooks() {
+		add_filter( 'wp_theme_json_data_theme', array( $this, 'modify_theme_json_viewport' ), 1000 );
+	}
+
+	/**
+	 * Overrides theme.json's `settings.viewport` with the plugin's active
+	 * user-defined breakpoints. Reads the full merged data first and only
+	 * replaces the `viewport` key so nothing else in theme.json is touched.
+	 *
+	 * @param \WP_Theme_JSON_Data $theme_json_object Theme JSON data.
+	 * @return \WP_Theme_JSON_Data
+	 */
+	public function modify_theme_json_viewport( $theme_json_object ) {
+		$viewport = Settings::get_viewport_settings();
+		if ( empty( $viewport ) ) {
+			return $theme_json_object;
+		}
+
+		$data                         = $theme_json_object->get_data();
+		$data['settings']['viewport'] = array_merge(
+			$data['settings']['viewport'] ?? array(),
+			$viewport
+		);
+
+		$theme_json_object->update_with( $data );
+
+		return $theme_json_object;
+	}
+
 	protected function enqueue_assets( $key ) {
 		$script_handle = $this->build_script_handle( $key );
 		wp_enqueue_script( $script_handle );
@@ -71,10 +103,10 @@ class Module extends ModuleBase {
 			'features'    => Plugin::instance()->get_active_features_keys(),
 			'breakpoints' => $this->get_user_defined_breakpoints_data(),
 			'animation'   => array(
-				'onHoverDefaults'              => AnimationSettings::get_on_hover_defaults(),
-				'onScrollDefaults'             => AnimationSettings::get_on_scroll_defaults(),
+				'onHoverDefaults'       => AnimationSettings::get_on_hover_defaults(),
+				'onScrollDefaults'      => AnimationSettings::get_on_scroll_defaults(),
 				'timingFunctionOptions' => AnimationSettings::get_timing_function_options(),
-				'effectOptions' => AnimationSettings::get_effect_options(),
+				'effectOptions'         => AnimationSettings::get_effect_options(),
 			),
 		);
 

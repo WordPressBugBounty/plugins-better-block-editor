@@ -20,7 +20,7 @@ class TimingFunction extends FieldBase implements FieldInterface {
 	}
 
 	public function get_description(): string {
-		return $this->description ?? __( '', 'better-block-editor' );
+		return $this->description ?? '';
 	}
 
 	public function get_template_filename(): string {
